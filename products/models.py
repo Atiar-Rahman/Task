@@ -15,15 +15,15 @@ class Category(models.Model):
 
 class CategoryBanner(models.Model):
     id = models.UUIDField(primary_key=True,default=uuid.uuid4,editable=False)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='category')
-    image = models.ImageField(upload_to='categories/banners/')
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='banners')
+    images = models.ImageField(upload_to='categories/banners/', blank=True, null=True)
     title = models.CharField(max_length=150, blank=True, null=True)
     subtitle = models.CharField(max_length=300)
     cta_text = models.CharField(max_length=100, blank=True, null=True)
     cta_url = models.URLField(blank=True, null=True)
     is_featured = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now = True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.category.name} - {self.title or 'Banner'}"
@@ -46,8 +46,8 @@ class Product(models.Model):
     
 class ProductImage(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name = 'product')
-    image = models.ImageField(upload_to='products/images')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name = 'images')
+    images = models.ImageField(upload_to='products/images', blank=True, null=True)
     alt_text = models.CharField(max_length=150, blank=True, null=True)
     is_featured = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
