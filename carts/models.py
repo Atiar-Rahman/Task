@@ -8,7 +8,7 @@ User = get_user_model()
 
 class Cart(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='carts')
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='carts')
     created_at = models.DateTimeField(auto_now_add=True)  
 
     def __str__(self):
@@ -26,6 +26,6 @@ class CartItem(models.Model):
     
 
     class Meta:
-            unique_together = ('cart', 'product')
+            unique_together = [['cart', 'product']]
             ordering = ['cart', 'product']
     
