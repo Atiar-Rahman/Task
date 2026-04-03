@@ -1,6 +1,7 @@
 from django.urls import path,include
 from products.views import CategoryViewSet,ProductViewSet,ProductImageViewSet,CategoryBannerViewSet,CategoryProductViewset
 from carts.views import CartViewSet, CartItemViewSet
+from orders.views import OrderViewset
 from rest_framework_nested import routers
 
 router = routers.DefaultRouter()
@@ -9,7 +10,8 @@ router.register('categorys',CategoryViewSet,basename='category'),
 router.register('products',ProductViewSet,basename='products'),
 router.register('product-image',ProductImageViewSet,basename='product-image'),
 router.register('category-banner',CategoryBannerViewSet,basename='category-banner'),
-router.register('carts',CartViewSet,basename='carts')
+router.register('carts',CartViewSet,basename='carts'),
+router.register('orders',OrderViewset,basename='orders')
 
 category_router = routers.NestedDefaultRouter(router, 'categorys', lookup='category')
 category_router.register('products',CategoryProductViewset,basename='category-product')
