@@ -37,12 +37,54 @@ class AddCartItemSerializer(serializers.ModelSerializer):
         if not Product.objects.filter(pk=value).exists():
             raise serializers.ValidationError(f"Product with id {value} does not exist")
         return value
+    
+    def validate(self, data):
+        cart_id = self.context['cart_id']
+        product = Product.objects.get(pk=data['product_id'])
+        quantity = data['quantity']
+
+        try:
+            cart_item = CartItem.objects.get(
+                cart_id=cart_id,
+                product_id=product.id
+            )
+            total_quantity = cart_item.quantity + quantity
+        except CartItem.DoesNotExist:
+            total_quantity = quantity
+
+        if total_quantity > product.stock:
+            raise serializers.ValidationError({
+                "quantity": f"Only {product.stock} items available in stock."
+            })
+
+        if quantity <= 0:
+            raise serializers.ValidationError({
+                "quantity": "Quantity must be greater than 0."
+            })
+
+        return data
 
 
 class UpdateCartItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartItem
         fields = ['quantity']
+
+    def validate_quantity(self, value):
+        cart_item = self.instance  # current cart item
+        product = cart_item.product  # related product
+
+        if value > product.stock:
+            raise serializers.ValidationError(
+                f"Only {product.stock} items available in stock."
+            )
+
+        if value <= 0:
+            raise serializers.ValidationError(
+                "Quantity must be greater than 0."
+            )
+
+        return value
 
 
 class CartItemSerializer(serializers.ModelSerializer):
@@ -51,7 +93,7 @@ class CartItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CartItem
-        fields = ['id', 'product', 'quantity', 'total_price']  # removed duplicate 'product'
+        fields = ['id', 'product', 'quantity', 'total_price']  
 
     def get_total_price(self, cart_item: CartItem):
         return cart_item.quantity * cart_item.product.price

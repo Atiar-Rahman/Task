@@ -4,6 +4,8 @@ from rest_framework.mixins import CreateModelMixin,RetrieveModelMixin,DestroyMod
 from carts.models import Cart,CartItem
 from carts.serializers import CartSerializer, CartItemSerializer, AddCartItemSerializer, UpdateCartItemSerializer
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 # Create your views here.
 class CartViewSet(CreateModelMixin, RetrieveModelMixin, DestroyModelMixin, GenericViewSet):
@@ -17,6 +19,14 @@ class CartViewSet(CreateModelMixin, RetrieveModelMixin, DestroyModelMixin, Gener
         if getattr(self, 'swagger_fake_view', False):
             return Cart.objects.none()
         return Cart.objects.prefetch_related('items__product').filter(user=self.request.user)
+    
+    @action(detail=False, methods=['get'])
+    def my_cart(self, request):
+        cart = Cart.objects.filter(user=request.user).first()
+        serializer = self.get_serializer(cart)
+        return Response(serializer.data)
+    
+    
     
 class CartItemViewSet(ModelViewSet):
     http_method_names = ['get', 'post', 'patch', 'delete']

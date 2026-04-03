@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'drf_yasg',
     'users',
     "rest_framework",
     'products',
@@ -133,3 +134,11 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.AllowAny"
     ]
 }
+
+# SWAGGER_SETTINGS = {
+#     'SECURITY_DEFINITIONS': {
+#         'basic': {
+#             'type': 'basic'
+#         }
+#     },
+# }

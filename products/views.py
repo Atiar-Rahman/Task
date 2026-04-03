@@ -191,3 +191,18 @@ class CategoryBannerViewSet(viewsets.ViewSet):
         image.delete()
 
         return Response({'message':"Category banner delete successfully"}, status=status.HTTP_204_NO_CONTENT)
+
+
+# CategoryProduct viewset
+
+class CategoryProductViewset(viewsets.ModelViewSet):
+    serializer_class = ProductSerializer
+
+    def get_queryset(self):
+        if getattr(self, 'swagger_fake_view', False):
+            return Product.objects.none()  # Swagger generation safe
+        category_id = self.kwargs.get('category_pk')
+        return Product.objects.filter(category_id=category_id)
+    
+    def perform_create(self, serializer):
+        serializer.save(category_id=self.kwargs.get('category_pk'))
