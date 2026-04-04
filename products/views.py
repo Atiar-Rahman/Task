@@ -58,8 +58,15 @@ class CategoryViewSet(viewsets.ViewSet):
 class ProductViewSet(viewsets.ViewSet):
     def list(self, request):
         products = Product.objects.all()
-        serializer = ProductSerializer(products, many=True)
 
+        # Get the category_id from query params
+        category_id = self.request.query_params.get('category_id')
+
+        if category_id is not None:
+            # Filter products by category_id
+            products = products.filter(category_id=category_id)
+
+        serializer = ProductSerializer(products, many=True)
         return Response(serializer.data)
     
     def retrieve(self, request, pk=None):
