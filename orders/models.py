@@ -6,6 +6,12 @@ from products.models import Product
 User = get_user_model()
 
 class Order(models.Model):
+    PENDING='pending'
+    PROCESSING='processing'
+    SHIPPED='shipped'
+    DELEVERED='delivered'
+    CANCELED='cancelled'
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -14,11 +20,11 @@ class Order(models.Model):
     status = models.CharField(
         max_length=50, 
         choices=[
-            ('pending', 'Pending'),
-            ('processing', 'Processing'),
-            ('shipped', 'Shipped'),
-            ('delivered', 'Delivered'),
-            ('cancelled', 'Cancelled')
+            (PENDING, 'Pending'),
+            (PROCESSING, 'Processing'),
+            (SHIPPED, 'Shipped'),
+            (DELEVERED, 'Delivered'),
+            (CANCELED, 'Cancelled')
         ], 
         default='pending'
     )

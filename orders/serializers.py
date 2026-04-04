@@ -4,6 +4,11 @@ from carts.serializers import SimpleProductSerializer
 from carts.models import Cart
 from orders.services import OrderService
 
+
+class EmptySerializer(serializers.Serializer):
+    pass
+
+
 class CreateOrderSerializer(serializers.Serializer):
     cart_id = serializers.UUIDField()
 
@@ -40,6 +45,12 @@ class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
         fields = ['id','product','quantity','price','total_price']
+
+class OrderUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields=['status']
+
 
 
 class OrderSerializer(serializers.ModelSerializer):
