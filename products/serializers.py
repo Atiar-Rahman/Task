@@ -1,6 +1,7 @@
 from rest_framework import serializers
-from products.models import Category, CategoryBanner, Product, ProductImage
-
+from products.models import Category, CategoryBanner, Product, ProductImage,Review
+from django.shortcuts import get_object_or_404
+from django.contrib.auth import get_user_model
 
 class ProductImageSerializer(serializers.ModelSerializer):
     product = serializers.PrimaryKeyRelatedField(
@@ -53,4 +54,40 @@ class CategorySerializer(serializers.ModelSerializer):
             'banners', 'products'
         ]
 
+
+User = get_user_model()
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'email']
+
+
     
+class ReviewSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    class Meta:
+        model = Review
+        fields = ['id','user','description','rating','date']
+
+    def create(self, validated_data):
+        product_id = self.context.get('product_id')
+        user = self.context.get('user')
+        print(user)
+
+        if not product_id or not user:
+            raise serializers.ValidationError('Missing context data')
+
+        product = get_object_or_404(Product, id=product_id)
+
+        # prevent duplicate review
+        if Review.objects.filter(product=product, user=user).exists():
+            raise serializers.ValidationError('You already reviewed this product')
+
+        review = Review.objects.create(
+            product=product,
+            user=user,
+            **validated_data
+        )
+
+        return review

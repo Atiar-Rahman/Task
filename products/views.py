@@ -2,9 +2,9 @@ from rest_framework import viewsets,status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
-from products.models import Category,CategoryBanner,Product,ProductImage
-from products.serializers import CategoryBannerSerializer,CategorySerializer,ProductImageSerializer,ProductSerializer
-
+from products.models import Category,CategoryBanner,Product,ProductImage,Review
+from products.serializers import CategoryBannerSerializer,CategorySerializer,ProductImageSerializer,ProductSerializer,ReviewSerializer
+from rest_framework.permissions import IsAuthenticated
 
 
 class CategoryViewSet(viewsets.ViewSet):
@@ -206,3 +206,22 @@ class CategoryProductViewset(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         serializer.save(category_id=self.kwargs.get('category_pk'))
+
+
+
+
+class ProductReviewViewset(viewsets.ModelViewSet):
+    
+    serializer_class = ReviewSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        reviews= Review.objects.filter(product_id=self.kwargs.get('product_pk'))
+
+        return reviews
+    
+
+    def get_serializer_context(self):
+        return {'product_id': self.kwargs.get('product_pk'),'user': self.request.user}
+    
+
